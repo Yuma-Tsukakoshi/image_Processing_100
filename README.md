@@ -1,90 +1,9 @@
-# 画像処理100本ノック!!
-
-***English is here*** (KuKuXia translates into English)
-
-> https://github.com/KuKuXia/Image_Processing_100_Questions
-
-***Chinese is here***  (gzr2017, my ex-colleague, translates into Chinese)
-
-> https://github.com/gzr2017/ImageProcessing100Wen
-
 ## Description
-
-画像処理の初学者のための問題１００問ですうう(´；ω；｀)
-
 これはイモリと一緒に画像処理の基本的処理の知識を身に着け、アルゴリズムを理解するための100本ノックです。ここに載っている問題はOpenCVでAPIが用意されているものが殆どですが、**あえてそれを自分の手で実装**してください。解答も載っけてますが、それはあくまで解答です。自分で考えながら実装して下さい。
-
-- **問題の難易度の順番はめちゃくちゃです。なるべくポピュラーなものを採用していますが、ネタ切れであんまり聞かないものもあります笑**
-- **内容はいろいろな文献を調べて載っけてるので正しくないものもあるかもしれないので注意して下さい** まちがいがあったらプルリクもらえるととても助かります！！
-- 【注意】このページを利用して、または関して生じた事に関しては、私は一切責任を負いません。すべて**自己責任**でお願い致します。
-
-PythonとC++の好きな方でやってみてね♡（最近Javascriptも追加してるよ）
-
-2019.5.14. これ金にならんかなぁ…
-
-意見や使用実績などあればご一報ください！
-
-もしこれがみなさんのお役に立ったら寄付や募金なども受け付けてます笑
-
-## Related
-
-★追記 2019.11.7
-
-Study-AI株式会社様　http://kentei.ai/
-のAI実装検定のシラバスに使用していただくことになりました！(ディープラーニング無限ノックも）
-Study-AI株式会社様ではAIスキルを学ぶためのコンテンツを作成されており、AIを学ぶ上でとても参考になります！
-検定も実施されてるので、興味ある方はぜひ受けることをお勧めします！
-
-**ディープラーニングのノックはこっち** 
-> [ディープラーニング∞本ノック!!](https://github.com/yoyoyo-yo/DeepLearningMugenKnock)
-
-## Recent
-
-Twitterで更新を発信してますぅ
-
-https://twitter.com/curry_frog
-
-- 2019.11.22 [C++] Q.49~50 モルフォロジー処理（オープンイング、クロージング）を追加
-- 2019.11.21 [C++] Q.48 モルフォロジー処理（収縮）を追加
-- 2019.11.20 [C++] Q.47 モルフォロジー処理（膨張）を追加
-- 2019.10.27 [C++] Q.44~46 Hough直線検出を追加、[Python]の解答を修正
-- 2019.10.22 [C++] Q.41~43 Cannyのエッジ検出を追加, [Python] の解答を修正
-- 2019.9.3 [Python] Q.81~100のAnswerコードをメソッド化
-- 2019.9.2 [Python] Q.61~80のAnswerコードをメソッド化
-- 2019.8.28 [Python] Q.51~60のAnswerコードをメソッド化
-- 2019.8.18 [Python] Q.50までのAnswerコードをメソッド化
-- 2019.8.12 [C++]Q.36-40の解答追加
-- 2019.7.32 [C++]Q.32-35の解答追加
-- 2019.7.23 [C++]Q.30-31の解答追加
-- 2019.7.22 [C++]Q.25-29の解答追加
-- 2019.6.30 Q.21-24のC++の解答追加
-- 2019.6.8 JavaScriptのチュートリアルを追加
-- 2019    Q.11-20 C++ を追加　Q.15 Sobelを修正
-- 2019.3.25 Q.31 フーリエ系 Q.36 DCT,  Q.47,48 トップハット変換系を修正
-- 2019.3.13 Q95-100 Neural Networkを修正
-- 2019.3.8 Questions_01_10 にC++の解答を追加！
-- 2019.3.7 TutorialにC++用を追加　そろそろC++用の答えもつくろっかなーと
-- 2019.3.5 各Questionの答えをanswersディレクトリに収納
-- 2019.3.3 Q.18-22. 一部修正
-- 2019.2.26 Q.10. メディアンフィルタの解答を一部修正
-- 2019.2.25 Q.9. ガウシアンフィルタの解答を一部修正
-- 2019.2.23 Q.6. 減色処理のREADMEを修正
-- 2019.1.29 HSVを修正
-
-## まずは
-
-gitをインストールします。そして、端末を開いて、このコマンドを実行します。このコマンドでこのディレクトリを丸ごと自分のパソコンにコピーできます。
-
-```bash
-$ git clone https://github.com/yoyoyo-yo/Gasyori100knock.git
-```
-
-そしたら、PythonかC++のやりたい方を選んで「**チュートリアル**」に進みましょう！
 
 ## [チュートリアル](Tutorial)
 
-| | 内容 | Python | C++ | JavaScript |
-|:---:|:---:|:---:|:---:|:---:|
+| | 内容 | Python |
 | 1 | インストール |  [✓](Tutorial) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/blob/master/Tutorial/README_opencv_c_install.md) |[✓](https://github.com/yoyoyo-yo/Gasyori100knock/blob/master/Tutorial/README_javascript.md) |
 | 2 | 画像読み込み・表示 | [✓](Tutorial#%E7%94%BB%E5%83%8F%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF%E8%A1%A8%E7%A4%BA) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/blob/master/Tutorial/README_opencv_c_install.md#%E7%94%BB%E5%83%8F%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/blob/master/Tutorial/) | [✓](README_javascript.md#%E7%94%BB%E5%83%8F%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF%E8%A1%A8%E7%A4%BA)
 | 3 | 画素をいじる| [✓](Tutorial#%E7%94%BB%E7%B4%A0%E3%82%92%E3%81%84%E3%81%98%E3%82%8B) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/blob/master/Tutorial/README_opencv_c_install.md#%E7%94%BB%E7%B4%A0%E3%82%92%E3%81%84%E3%81%98%E3%82%8B) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/blob/master/Tutorial/README_javascript.md#%E7%94%BB%E7%B4%A0%E3%82%92%E3%81%84%E3%81%98%E3%82%8B) | 
