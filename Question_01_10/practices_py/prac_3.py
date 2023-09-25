@@ -16,7 +16,7 @@ def binary_scale(img, th=128):
   return img
 
 #read_img
-img = cv2.imread('imori.jpg')
+img = cv2.imread('Question_01_10\imori.jpg')
 img2 = BGR2GRAY(img)
 img2 = binary_scale(img2)
 

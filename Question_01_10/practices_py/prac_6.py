@@ -13,7 +13,7 @@ def reduce_color(_img):
   return img
 
 #read_img
-img = cv2.imread('imori.jpg')
+img = cv2.imread('Question_01_10\imori.jpg')
 out = reduce_color(img)
 
 #result_img

@@ -5,11 +5,11 @@ def gaussian(_img):
   K = 1/16 * np.array([[1,2,1],[2,4,2],[1,2,1]])
   img = _img.copy()
   # 周辺1行分を0パディング
-  img = np.pad(img,1)
   
   H,W,C = img.shape
   print(H,W,C)
   
+  img = np.pad(img,1)
   # for y in range(H):
   #   for x in range(W):
   #     for c in range(C):
@@ -20,8 +20,8 @@ def gaussian(_img):
   return img
 
 #read_img
-img = cv2.imread('imori_noise.jpg')
-out = gaussian(img)
+img = cv2.imread('Question_01_10\imori_noise.jpg')
+out = gaussian(img,K_size=3, sigma=1.3)
 
 #result_img
 # cv2.imwrite('answers_image/answer4.jpg',img2)

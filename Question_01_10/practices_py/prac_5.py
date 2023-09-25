@@ -69,7 +69,7 @@ def HSV2BGR(_img, hsv):
   return out
 
 #read_img
-img = cv2.imread('imori.jpg').astype(np.float32)
+img = cv2.imread('Question_01_10\imori.jpg').astype(np.float32)
 hsv = BGR2HSV(img)
 hsv[...,0] = (hsv[...,0] + 180 ) % 360
 

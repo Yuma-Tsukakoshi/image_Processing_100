@@ -18,7 +18,7 @@ def average_pooling(_img,G):
   return img
 
 #read_img
-img = cv2.imread('imori.jpg')
+img = cv2.imread('Question_01_10\imori.jpg')
 out = average_pooling(img,8)
 
 #result_img
