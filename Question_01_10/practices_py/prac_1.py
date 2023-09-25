@@ -1,4 +1,4 @@
-import cv2 
+import cv2
 
 def RGB2BGR(img):
   b = img[:,:,0].copy()
