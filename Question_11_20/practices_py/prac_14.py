@@ -10,7 +10,7 @@ def BGR2GRAY(img):
   out = out.astype(np.uint8)  
   return out
 
-def sobel_filter(img, K_size=3):
+def grad_filter(img, K_size=3):
   
   H, W= img.shape
 
@@ -20,8 +20,8 @@ def sobel_filter(img, K_size=3):
   out[pad: pad + H, pad: pad + W] = img.copy().astype(np.float)  
   
   ## prepare Kernel
-  K = np.array([[1., 2., 1.],[0., 0., 0.],[-1., -2., -1.]])
-  # K= np.array([[1., 0., -1.],[2., 0., -2.],[1., 0., -1.]])
+  K = np.array([[0., -1., 0.],[0., 1., 0.],[0., 0., 0.]])
+  # K= np.array([[0., 0., 0.],[-1., 1., 0.],[0., 0., 0.]])
 
   
   tmp = out.copy()  
@@ -39,7 +39,7 @@ def sobel_filter(img, K_size=3):
 #read_img
 img = cv2.imread('Question_01_10\imori.jpg')
 out = BGR2GRAY(img)
-out = sobel_filter(out, K_size=3)
+out = grad_filter(out, K_size=3)
 
 #result_img
 # cv2.imwrite('answers_image/answer4.jpg',img2)
