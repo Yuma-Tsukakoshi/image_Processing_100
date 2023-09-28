@@ -10,7 +10,7 @@ def BGR2GRAY(img):
   out = out.astype(np.uint8)  
   return out
 
-def emboss_filter(img, K_size=3):
+def laplacian_filter(img, K_size=3):
   
   H, W= img.shape
 
@@ -38,7 +38,7 @@ def emboss_filter(img, K_size=3):
 #read_img
 img = cv2.imread('Question_01_10\imori.jpg')
 out = BGR2GRAY(img)
-out = emboss_filter(out, K_size=3)
+out = laplacian_filter(out, K_size=3)
 
 #result_img
 # cv2.imwrite('answers_image/answer4.jpg',img2)
