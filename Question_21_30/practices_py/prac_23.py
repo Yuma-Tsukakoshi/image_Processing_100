@@ -10,7 +10,7 @@ def BGR2GRAY(img):
   out = out.astype(np.uint8)  
   return out
 
-def prewitt_filter(img, K_size=3):
+def max_min(img, K_size=3):
   
   H, W= img.shape
 
@@ -19,19 +19,13 @@ def prewitt_filter(img, K_size=3):
   out = np.zeros((H + pad * 2, W + pad * 2), dtype=np.float) #上下左右に1pxずつ0でpadding⇒×2
   out[pad: pad + H, pad: pad + W] = img.copy().astype(np.float)  
   
-  ## prepare Kernel
-  # K = np.array([[-1., -1., -1.],[0., 0., 0.],[1., 1., 1.]])
-  K= np.array([[-1., 0., 1.],[-1., 0., 1.],[-1., 0., 1.]])
-
-  
   tmp = out.copy()  
   
   # filtering
   for y in range(H):
     for x in range(W):
-      out[pad + y, pad + x] = np.sum(K*tmp[y: y + K_size, x: x + K_size ])
+      out[pad + y, pad + x] = np.max(tmp[y: y + K_size, x: x + K_size ]) - np.min(tmp[y: y + K_size, x: x + K_size])  
 
-  # clip操作で0~255に収める操作結構重要
   out = np.clip(out, 0, 255)
   out = out[pad: pad + H, pad: pad + W].astype(np.uint8)  
   return out
@@ -39,7 +33,7 @@ def prewitt_filter(img, K_size=3):
 #read_img
 img = cv2.imread('Question_01_10\imori.jpg')
 out = BGR2GRAY(img)
-out = prewitt_filter(out, K_size=3)
+out = max_min(out, K_size=3)
 
 #result_img
 # cv2.imwrite('answers_image/answer4.jpg',img2)
