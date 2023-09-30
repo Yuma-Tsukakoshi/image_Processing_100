@@ -1,42 +1,39 @@
+# matlplotlib はgooglecolobで用いて使うことにする
+# 画像のimg.showはvscodeでやる
+
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 
-def BGR2GRAY(img):
-  b = img[:,:,0].copy()
-  g = img[:,:,1].copy()
-  r = img[:,:,2].copy()
+# Read image
+img = cv2.imread("Question_21_30\imori.jpg")
 
-  out = 0.2126*r + 0.7152*g + 0.0722*b
-  out = out.astype(np.uint8)  
+# histogram normalization
+def hist_normalization(img, z_max = 255):
+  out = img.copy()
+  H,W,C = out.shape
+  
+  S = H* W * C  
+  
+  sum_h = 0
+  
+  # np.whereで条件に合う要素のインデックスを返してその長さを取得することで頻度を求めることができる上手い！
+  for i in range(1,255):
+    ind = np.where(img == i)
+    sum_h += len(img[ind])
+    z_prime = z_max / S * sum_h
+    out[ind] = z_prime
+  
+  out = out.astype(np.uint8)
   return out
 
-def max_min(img, K_size=3):
-  
-  H, W= img.shape
+# histogram normalization
+out = hist_normalization(img)
 
-  ## Zero padding
-  pad = K_size // 2
-  out = np.zeros((H + pad * 2, W + pad * 2), dtype=np.float) #上下左右に1pxずつ0でpadding⇒×2
-  out[pad: pad + H, pad: pad + W] = img.copy().astype(np.float)  
-  
-  tmp = out.copy()  
-  
-  # filtering
-  for y in range(H):
-    for x in range(W):
-      out[pad + y, pad + x] = np.max(tmp[y: y + K_size, x: x + K_size ]) - np.min(tmp[y: y + K_size, x: x + K_size])  
+# Display histogram
+plt.hist(out.ravel(), bins=255, rwidth=0.8, range=(0, 255))
+plt.show()
 
-  out = np.clip(out, 0, 255)
-  out = out[pad: pad + H, pad: pad + W].astype(np.uint8)  
-  return out
-
-#read_img
-img = cv2.imread('Question_01_10\imori.jpg')
-out = BGR2GRAY(img)
-out = max_min(out, K_size=3)
-
-#result_img
-# cv2.imwrite('answers_image/answer4.jpg',img2)
-cv2.imshow('result',out)
+# Save result
+cv2.imshow("result", out)
 cv2.waitKey(0)
-cv2.destroyAllWindows()
