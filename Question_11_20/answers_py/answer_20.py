@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Read image
-img = cv2.imread("imori_dark.jpg").astype(np.float)
+img = cv2.imread("Question_11_20\imori_dark.jpg").astype(np.float)
 
 # Display histogram
 plt.hist(img.ravel(), bins=255, rwidth=0.8, range=(0, 255))
