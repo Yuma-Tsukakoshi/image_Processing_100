@@ -20,14 +20,15 @@ def bi_linear(img, ax=1, ay=1):
   ix= np.floor(x).astype(np.int)
   iy = np.floor(y).astype(np.int)
   
-  # なぜ行っている？
+  # 2つの値の内小さいほうを取る ix,iyは元画像の座標を表している
   ix = np.minimum(ix, W-2)
   iy = np.minimum(iy, H-2)
   
-  # それぞれの画素と距離dを求める、その後w=d/sum(d)で重みを求める
+  # 画像の座標の差分を求める
   dx = x - ix
   dy = y - iy
   
+  # 特定の軸に対して要素を追加する axis=-1は最後の軸に対して要素を追加する
   dx = np.repeat(np.expand_dims(dx, axis=-1), 3, axis=-1)
   dy = np.repeat(np.expand_dims(dy,axis=-1),3,axis=-1)
   
