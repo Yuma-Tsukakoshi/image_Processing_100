@@ -13,7 +13,7 @@ def skew(img,dx,dy):
     dest[:,0] += (dx / W * (src[:,1])).astype(np.float32)
     dest[:,1] += (dy / H * (src[:,0])).astype(np.float32)
 
-    """
+    """A
     アフィン変換の変換行列を生成: cv2.getAffineTransform(src, dest)
     src: 変換前の3点の座標
     dest: 変換後の3点の座標をNumPy配列ndarrayで指定
