@@ -1,49 +1,70 @@
 import cv2
 import numpy as np
 
-def bi_linear(img, ax=1, ay=1):
-  # 1.5倍にスケールアップしている
-  H,W,C = img.shape
-  
-  # スケールアップ後のサイズ
-  aH = int(ay * H)
-  aW = int(ax * W)
-  
-  # リサイズ後の画像の座標を与える
-  y = np.arange(aH).repeat(aW).reshape(aW,-1)
-  x = np.tile(np.arange(aW), (aH,1))
-  
-  # スケールアップ前の座標を与える  
-  y = (y / ay)
-  x = (x / ax)
+T = 8
+K = 8
+channel = 3
 
-  ix= np.floor(x).astype(np.int)
-  iy = np.floor(y).astype(np.int)
+# bgr -> gray
+# def bgr2gray(img):
+#     gray = 0.2126 * img[..., 2] + 0.7152 * img[..., 1] + 0.0722 * img[..., 0]
+#     return gray
+
+def w(x,y,u,v):
+  cu = 1
+  cv = 1
+  if u==0:
+    cu = 1/np.sqrt(2)
+  if v==0:
+    cv = 1/np.sqrt(2)
+  theta = np.pi/(2*T)
   
-  # 2つの値の内小さいほうを取る ix,iyは元画像の座標を表している
-  ix = np.minimum(ix, W-2)
-  iy = np.minimum(iy, H-2)
-  
-  # 画像の座標の差分を求める
-  dx = x - ix
-  dy = y - iy
-  
-  # 特定の軸に対して要素を追加する axis=-1は最後の軸に対して要素を追加する
-  dx = np.repeat(np.expand_dims(dx, axis=-1), 3, axis=-1)
-  dy = np.repeat(np.expand_dims(dy,axis=-1),3,axis=-1)
-  
-  out = (1-dx)*(1-dy)*img[iy,ix]+ dx*(1-dy)*img[iy,ix+1] + (1-dx)*dy*img[iy+1,ix] + dx*dy*img[iy+1,ix+1]
-  
-  out = np.clip(out, 0, 255)
-  out = out.astype(np.uint8)
+  return cu*cv*(2/T)*np.cos((2*x+1)*u*theta)*np.cos((2*y+1)*v*theta)
+
+# このweightを使ってDCTを計算する
+def dct(img):
+  H,W,C = img.shape
+  F = np.zeros((H,W,channel),dtype=np.float32)
+  for c in range(channel):
+    # 縦横8x8のブロックに分けて処理する⇒ステップを8マスずつ進める
+    for yi in range(0,H,T):
+      for xi in range(0,W,T):
+        for v in range(T):
+          for u in range(T):
+            for y in range(T):
+              for x in range(T):
+                # 各画素に対して離散コサイン変換を行う
+                # yi xi がブロックの左上の座標
+                # y x がブロック内の座標
+                F[v+yi,u+xi,c] += img[y+yi,x+xi,c]*w(x,y,u,v)
+  return F
+
+def idct(F):
+  H,W,C = F.shape
+  out = np.zeros((H,W,channel),dtype=np.float32)
+  for c in range(channel):
+    # 縦横8x8のブロックに分けて処理する⇒ステップを8マスずつ進める
+    for yi in range(0,H,T):
+      for xi in range(0,W,T):
+        for v in range(T):
+          for u in range(T):
+            for y in range(T):
+              for x in range(T):
+                # 各画素に対して離散コサイン変換を行う
+                # yi xi がブロックの左上の座標
+                # y x がブロック内の座標
+                out[y+yi,x+xi,c] += F[v+yi,u+xi,c]*w(x,y,u,v)
+                
+  out = np.clip(out,0,255)
+  out = np.round(out).astype(np.uint8)
   
   return out
 
 # Read image
-img = cv2.imread("Question_21_30\imori.jpg").astype(np.float)
-
-# 1.5倍に拡大する関数
-out = bi_linear(img, ax=1.5, ay=1.5)
+img = cv2.imread("Question_31_40\imori.jpg").astype(np.float32)
+# F = bgr2gray(img)
+F = dct(img)
+out = idct(F)
 
 # Save result
 cv2.imshow("result", out)
