@@ -1,28 +1,19 @@
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Read image
-img = cv2.imread("Question_41_50\imori.jpg")
+img = cv2.imread("Question_51_60\seg.png")
+# グレースケールに変換する。
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+# 2値化する
+ret, bin_img = cv2.threshold(gray, 20, 255, cv2.THRESH_BINARY)
 
-# 大津の手法
-ret, bin_img = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU)
-kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
-
-def erode(img,n):
-  return cv2.erode(img, kernel, iterations=n)
-
-def dilate(img,n):
-  return cv2.dilate(img, kernel, iterations=n)
-
-def opening(img,n):
-  out = erode(img,n)
-  out = dilate(out,n)
-  return out
-
-out = opening(bin_img,1)
-
+n_labels, out = cv2.connectedComponents(bin_img,connectivity=8)
 
 # Save result
-cv2.imshow("result", out)
+print("number of labels:", n_labels)
+fig, ax = plt.subplots(figsize=(7, 7))
+ax.imshow(out)
 cv2.waitKey(0)
+
