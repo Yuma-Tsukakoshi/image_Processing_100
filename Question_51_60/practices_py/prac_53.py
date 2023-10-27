@@ -9,7 +9,7 @@ gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 ret, bin_img = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU)
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
 
-out = cv2.morphologyEx(bin_img, cv2.MORPH_TOPHAT, kernel, iterations=3)
+out = cv2.morphologyEx(bin_img, cv2.MORPH_BLACKHAT, kernel, iterations=2)
 
 # Save result
 cv2.imshow("result", out)
