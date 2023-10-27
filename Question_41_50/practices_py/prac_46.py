@@ -1,71 +1,43 @@
 import cv2
 import numpy as np
+# from matplotlib import pyplot as plt
 
-T = 8
-K = 8
-channel = 3
+img = cv2.imread('Question_41_50\\thorino.jpg')
 
-# bgr -> gray
-# def bgr2gray(img):
-#     gray = 0.2126 * img[..., 2] + 0.7152 * img[..., 1] + 0.0722 * img[..., 0]
-#     return gray
+def canny(img):
+      # 画像の高さ、幅、色を取得
+    dst = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    out = cv2.Canny(dst, 120,120)
+    return out    
 
-def w(x,y,u,v):
-  cu = 1
-  cv = 1
-  if u==0:
-    cu = 1/np.sqrt(2)
-  if v==0:
-    cv = 1/np.sqrt(2)
-  theta = np.pi/(2*T)
-  
-  return cu*cv*(2/T)*np.cos((2*x+1)*u*theta)*np.cos((2*y+1)*v*theta)
+#result_img
+# cv2.imwrite('answers_image/answer4.jpg',img2)
+edges = canny(img)
+# 検出された直線の一覧の形状がndarrayで返される
+lines =cv2.HoughLines(edges, rho=1, theta=np.pi/180, threshold=75)
 
-# このweightを使ってDCTを計算する
-def dct(img):
-  H,W,C = img.shape
-  F = np.zeros((H,W,channel),dtype=np.float32)
-  for c in range(channel):
-    # 縦横8x8のブロックに分けて処理する⇒ステップを8マスずつ進める
-    for yi in range(0,H,T):
-      for xi in range(0,W,T):
-        for v in range(T):
-          for u in range(T):
-            for y in range(T):
-              for x in range(T):
-                # 各画素に対して離散コサイン変換を行う
-                # yi xi がブロックの左上の座標
-                # y x がブロック内の座標
-                F[v+yi,u+xi,c] += img[y+yi,x+xi,c]*w(x,y,u,v)
-  return F
+def draw_line(img, theta, rho):
+    h, w = img.shape[:2]
+    if np.isclose(np.sin(theta), 0):
+        x1, y1 = rho, 0
+        x2, y2 = rho, h
+    else:
+        calc_y = lambda x: rho / np.sin(theta) - x * np.cos(theta) / np.sin(theta)
+        x1, y1 = 0, calc_y(0)
+        x2, y2 = w, calc_y(w)
 
-def idct(F):
-  H,W,C = F.shape
-  out = np.zeros((H,W,channel),dtype=np.float32)
-  for c in range(channel):
-    # 縦横8x8のブロックに分けて処理する⇒ステップを8マスずつ進める
-    for yi in range(0,H,T):
-      for xi in range(0,W,T):
-        for v in range(T):
-          for u in range(T):
-            for y in range(T):
-              for x in range(T):
-                # 各画素に対して離散コサイン変換を行う
-                # yi xi がブロックの左上の座標
-                # y x がブロック内の座標
-                out[y+yi,x+xi,c] += F[v+yi,u+xi,c]*w(x,y,u,v)
-                
-  out = np.clip(out,0,255)
-  out = np.round(out).astype(np.uint8)
-  
-  return out
+    # float -> int
+    x1, y1, x2, y2 = list(map(int, [x1, y1, x2, y2]))
 
-# Read image
-img = cv2.imread("Question_31_40\imori.jpg").astype(np.float32)
-# F = bgr2gray(img)
-F = dct(img)
-out = idct(F)
+    cv2.line(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
 
-# Save result
-cv2.imshow("result", out)
+
+# 直線を描画する。
+if lines is not None:
+    for rho, theta in lines.squeeze(axis=1):
+        draw_line(img, theta, rho)
+        
+cv2.imshow('result', img)
 cv2.waitKey(0)
+cv2.destroyAllWindows()
+
