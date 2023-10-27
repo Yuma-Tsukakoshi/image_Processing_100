@@ -1,18 +1,27 @@
 import cv2
 import numpy as np
 
-def change_yellow(img,y):
-    # rgb => YCrCbへ変換
-    YCrCb = cv2.cvtColor(img,cv2.COLOR_BGR2YCrCb)
-    YCrCb[...,0] = YCrCb[...,0]*y
-    
-    # YCrCb => bgrへ変換
-    out = cv2.cvtColor(YCrCb,cv2.COLOR_YCrCb2BGR)
-    return out 
-
 # Read image
-img = cv2.imread("Question_31_40\imori.jpg").astype(np.float32)
-out = change_yellow(img,y=0.7)
+img = cv2.imread("Question_41_50\imori.jpg")
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# 大津の手法
+ret, bin_img = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU)
+kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
+
+def erode(img,n):
+  return cv2.erode(img, kernel, iterations=n)
+
+def dilate(img,n):
+  return cv2.dilate(img, kernel, iterations=n)
+
+def opening(img,n):
+  out = erode(img,n)
+  out = dilate(out,n)
+  return out
+
+out = opening(bin_img,1)
+
 
 # Save result
 cv2.imshow("result", out)
