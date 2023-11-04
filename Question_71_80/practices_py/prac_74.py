@@ -2,32 +2,19 @@ import cv2
 import numpy as np
 
 # Read image
-img = cv2.imread("Question_51_60\imori.jpg")
-temp = cv2.imread("Question_51_60\imori_part.jpg")
+img = cv2.imread("Question_71_80\imori.jpg")
+H,W,C = img.shape
 
-result = cv2.matchTemplate(img, temp, cv2.TM_CCOEFF_NORMED)
-
-print("img.shape", img.shape) 
-print("template.shape", temp.shape)  
-print("result.shape", result.shape)  
-
-# 類似度が最も高い場所を探す
-# minVal: 類似度の最小値, maxVal: 類似度の最大値, minLoc: 類似度が最小の位置, maxLoc: 類似度が最大の位置
-
-minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(result)
-# rectangleの左上の座標を取得する。 -> position
-print(f"max value: {maxVal}, position: {maxLoc}")
-
-# 描画する。 tl: top left , br: bottom right
-tl = maxLoc[0], maxLoc[1]
-br = maxLoc[0] + temp.shape[1], maxLoc[1] + temp.shape[0]
-print(tl)
-print(br)
-
-dst = img.copy()
-# 左上と右下の座標を指定して、矩形を描画する。
-cv2.rectangle(dst, tl, br, color=(0, 0, 255), thickness=2) # bgr
-
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+img2 = gray.copy()
+# resizeで正しい引数をする !!
+erode = cv2.resize(gray, None, fx=0.5, fy=0.5)
+out = cv2.resize(erode, None, fx=2, fy=2)
+out = img2-out
+np.clip(out, 0, 255)
+out = out*255/out.max()
+out.astype(np.uint8)
 # Save result
-cv2.imshow("result", dst)
+cv2.imshow("result", out)
 cv2.waitKey(0)
+cv2.destroyAllWindows()
