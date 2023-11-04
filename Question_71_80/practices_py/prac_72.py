@@ -1,58 +1,54 @@
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
-
-# connect 8
-def connect_8(img):
-    # get shape
-    H, W, C = img.shape
-
-    # prepare temporary
-    _tmp = np.zeros((H, W), dtype=np.int)
-
-    # get binarize
-    _tmp[img[..., 0] > 0] = 1
-
-    # inverse for connect 8 反転処理が行われてる
-    tmp = 1 - _tmp
-
-    # prepare image
-    out = np.zeros((H, W, 3), dtype=np.uint8)
-
-    # each pixel
-    for y in range(H):
-        for x in range(W):
-            if _tmp[y, x] < 1:
-                continue
-
-            S = 0
-            S += (tmp[y,min(x+1,W-1)] - tmp[y,min(x+1,W-1)] * tmp[max(y-1,0),min(x+1,W-1)] * tmp[max(y-1,0),x])
-            S += (tmp[max(y-1,0),x] - tmp[max(y-1,0),x] * tmp[max(y-1,0),max(x-1,0)] * tmp[y,max(x-1,0)])
-            S += (tmp[y,max(x-1,0)] - tmp[y,max(x-1,0)] * tmp[min(y+1,H-1),max(x-1,0)] * tmp[min(y+1,H-1),x])
-            S += (tmp[min(y+1,H-1),x] - tmp[min(y+1,H-1),x] * tmp[min(y+1,H-1),min(x+1,W-1)] * tmp[y,min(x+1,W-1)])
-            
-            if S == 0:
-                out[y,x] = [0, 0, 255]
-            elif S == 1:
-                out[y,x] = [0, 255, 0]
-            elif S == 2:
-                out[y,x] = [255, 0, 0]
-            elif S == 3:
-                out[y,x] = [255, 255, 0]
-            elif S == 4:
-                out[y,x] = [255, 0, 255]
-                    
-    out = out.astype(np.uint8)
-
-    return out
-
 
 # Read image
-img = cv2.imread("renketsu.png").astype(np.float32)
+img = cv2.imread("Question_71_80\imori.jpg")
 
-# connect 8
-out = connect_8(img)
+kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
 
+# Canny
+def Canny(img):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    out = cv2.Canny(gray, 240,240)
+    return out 
+
+def erode(img,n):
+    return cv2.erode(img, kernel, iterations=n)
+
+def dilate(img,n):
+    return cv2.dilate(img, kernel, iterations=n)
+
+def closing(img,n):
+    # out = Canny(img)
+    out = dilate(img,n)
+    out = erode(out,n)
+    return out
+
+def opening(img,n):
+    out = erode(img,n)
+    out = dilate(out,n)
+    return out
+
+out = closing(img,5)
+# gray = cv2.cvtColor(out, cv2.COLOR_BGR2GRAY)
+
+# 大津の手法
+# ret, bin_img = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU)
+out = opening(out,5)
+
+# make mask
+def get_mask(hsv): 
+    mask = hsv.copy() 
+    mask[np.logical_and((hsv[..., 0] >= 90), (hsv[..., 0] <= 150))] = 0 
+    return mask
+
+# RGB > HSV
+hsv = cv2.cvtColor(out, cv2.COLOR_BGR2HSV)
+
+# color tracking
+mask = get_mask(hsv)
+out = cv2.cvtColor(mask, cv2.COLOR_HSV2BGR)
+# out = mask.astype(np.uint8)
 
 # Save result
 cv2.imshow("result", out)
