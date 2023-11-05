@@ -1,20 +1,51 @@
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
+from glob import glob
 
-# Read image
-img = cv2.imread("Question_71_80\imori.jpg")
-H,W,C = img.shape
+## Dicrease color
+def dic_color(img):
+    img //= 63
+    img = img * 64 + 32
+    return img
 
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-img2 = gray.copy()
-# resizeで正しい引数をする !!
-erode = cv2.resize(gray, None, fx=0.5, fy=0.5)
-out = cv2.resize(erode, None, fx=2, fy=2)
-out = img2-out
-np.clip(out, 0, 255)
-out = out*255/out.max()
-out.astype(np.uint8)
-# Save result
-cv2.imshow("result", out)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+## Database
+def get_DB():
+    # get image paths
+    train = glob("dataset/train_*")
+    train.sort()
+    print(train)
+
+    # prepare database
+    db = np.zeros((len(train), 13), dtype=np.int32)
+
+    # each image
+    for i, path in enumerate(train):
+        img = dic_color(cv2.imread(path))
+        # get histogram
+        for j in range(4):
+            db[i, j] = len(np.where(img[..., 0] == (64 * j + 32))[0])
+            db[i, j+4] = len(np.where(img[..., 1] == (64 * j + 32))[0])
+            db[i, j+8] = len(np.where(img[..., 2] == (64 * j + 32))[0])
+
+        # get class
+        if 'akahara' in path:
+            cls = 0
+        elif 'madara' in path:
+            cls = 1
+
+        # store class label
+        db[i, -1] = cls
+
+        img_h = img.copy() // 64
+        img_h[..., 1] += 4
+        img_h[..., 2] += 8
+        plt.subplot(2, 5, i+1)
+        plt.hist(img_h.ravel(), bins=12, rwidth=0.8)
+        plt.title(path)
+
+    print(db)
+    plt.show()
+
+# get database
+get_DB()
