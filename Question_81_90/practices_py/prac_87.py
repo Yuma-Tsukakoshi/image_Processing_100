@@ -1,22 +1,106 @@
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
+from glob import glob
 
-# Read image
-img = cv2.imread("Question_71_80\imori.jpg")
-H,W,C = img.shape
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-out = cv2.getGaborKernel(ksize=(111,111),sigma=10,theta=45,lambd=10,gamma=1.2,psi=0)
-"""
-パラメータ：
-ksize:カーネルのサイズ
-sigma:標準偏差
-theta:平行線に対する法線の向き
-lambd:正弦波因子の波長
-gamma:空間アスペクト比
-psi:位相オフセット
-ktype: フィルタ係数の種類
-"""
+# Dicrease color
+def dic_color(img):
+    img //= 63
+    img = img * 64 + 32
+    return img
 
-cv2.imshow('result', out)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# Database
+def get_DB():
+    # get training image path
+    train = glob("train_*")
+    train.sort()
+
+    # prepare database
+    db = np.zeros((len(train), 13), dtype=np.int32)
+
+    # prepare path database
+    pdb = []
+
+    # each image
+    for i, path in enumerate(train):
+        # read image
+        img = dic_color(cv2.imread(path))
+
+        #get histogram
+        for j in range(4):
+            db[i, j] = len(np.where(img[..., 0] == (64 * j + 32))[0])
+            db[i, j+4] = len(np.where(img[..., 1] == (64 * j + 32))[0])
+            db[i, j+8] = len(np.where(img[..., 2] == (64 * j + 32))[0])
+
+        # get class
+        if 'akahara' in path:
+            cls = 0
+        elif 'madara' in path:
+            cls = 1
+
+        # store class label
+        db[i, -1] = cls
+
+        # store image path
+        pdb.append(path)
+
+    return db, pdb
+
+# test
+def test_DB(db, pdb):
+    # get test image path
+    test = glob("test_*")
+    test.sort()
+
+    success_num = 0
+
+    # each image
+    for path in test:
+        # read image
+        img = dic_color(cv2.imread(path))
+
+        # get histogram
+        hist = np.zeros(12, dtype=np.int32)
+        for j in range(4):
+            hist[j] = len(np.where(img[..., 0] == (64 * j + 32))[0])
+            hist[j+4] = len(np.where(img[..., 1] == (64 * j + 32))[0])
+            hist[j+8] = len(np.where(img[..., 2] == (64 * j + 32))[0])
+
+        # get histogram difference
+        difs = np.abs(db[:, :12] - hist)
+        difs = np.sum(difs, axis=1)
+
+        # get class
+        if 'akahara' in path:
+            cls = 0
+        elif 'madara' in path:
+            cls = 1
+
+        # get argmin of difference
+        sort_min = difs.argsort()
+        pred_i = sort_min[:3]
+
+        # get prediction label clsの位置を把握
+
+        pred_list = []
+        for i in pred_i:
+          pred_list.append(db[i, -1])
+        
+        print(pred_list)
+        count = np.bincount(pred_list)
+        pred = np.argmax(count)
+
+        if(pred==cls):
+          success_num += 1
+        
+
+        if pred == 0:
+            pl = "akahara"
+        elif pred == 1:
+            pl = "madara"
+        
+        print(path, "is similar >>", pdb[pred], " Pred >>", pl)
+    print("Accuracy >>", success_num / len(test))
+
+db, pdb = get_DB()
+test_DB(db, pdb)
