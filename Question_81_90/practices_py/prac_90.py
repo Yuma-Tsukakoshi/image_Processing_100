@@ -1,20 +1,93 @@
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
+from glob import glob
 
-# Read image
-img = cv2.imread("Question_71_80\imori.jpg")
-H,W,C = img.shape
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+# Dicrease color
+def dic_color(img):
+    img //= 63
+    img = img * 64 + 32
+    return img
 
 
-sum = np.zeros((H,W), dtype=np.uint8)
-for i in range(4):
-    img_ = gray.copy()
-    filter = cv2.getGaborKernel(ksize=(11,11),sigma=1.5,theta=45*i,lambd=3,gamma=1.2,psi=0)
-    out = cv2.filter2D(img_,ddepth=-1,kernel=filter)
-    sum += out
+# Database
+def get_DB():
+    # get training image path
+    train = glob("train_*")
+    train.sort()
 
-np.clip(sum, 0, 255)
-cv2.imshow('result', sum)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+    # prepare database
+    db = np.zeros((len(train), 13), dtype=np.int32)
+    pdb = []
+
+    # each train
+    for i, path in enumerate(train):
+        # read image
+        img = dic_color(cv2.imread(path))
+        # histogram
+        for j in range(4):
+            db[i, j] = len(np.where(img[..., 0] == (64 * j + 32))[0])
+            db[i, j+4] = len(np.where(img[..., 1] == (64 * j + 32))[0])
+            db[i, j+8] = len(np.where(img[..., 2] == (64 * j + 32))[0])
+
+        # get class
+        if 'akahara' in path:
+            cls = 0
+        elif 'madara' in path:
+            cls = 1
+
+        # store class label
+        db[i, -1] = cls
+
+        # add image path
+        pdb.append(path)
+
+    return db, pdb
+
+# k-Means step1
+def k_means_step2(db, pdb, Class=2):
+    # copy database
+    feats = db.copy()
+
+    # initiate random seed
+    np.random.seed(4)
+
+    # assign random class 
+    for i in range(len(feats)):
+        if np.random.random() < 0.3:
+            feats[i, -1] = 0
+        else:
+            feats[i, -1] = 1
+
+    while True:
+        # prepare greavity
+        gs = np.zeros((Class, 12), dtype=np.float32)
+        change_count = 0
+
+        # compute gravity
+        for i in range(Class):
+            gs[i] = np.mean(feats[np.where(feats[..., -1] == i)[0], :12], axis=0)
+
+        # re-labeling
+        for i in range(len(feats)):
+            # get distance each nearest graviry
+            dis = np.sqrt(np.sum(np.square(np.abs(gs - feats[i, :12])), axis=1))
+
+            # get new label
+            pred = np.argmin(dis, axis=0)
+
+            # if label is difference from old label
+            if int(feats[i, -1]) != pred:
+                change_count += 1
+                feats[i, -1] = pred
+
+        if change_count < 1:
+          # 変化なかったら抜ける = 確定
+            break
+
+    for i in range(db.shape[0]):
+        print(pdb[i], " Pred:", feats[i, -1])
+
+
+db, pdb = get_DB()
+k_means_step2(db, pdb)

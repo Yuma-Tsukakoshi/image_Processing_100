@@ -9,24 +9,22 @@ def dic_color(img):
     img = img * 64 + 32
     return img
 
+
 # Database
 def get_DB():
     # get training image path
-    train = glob("train_*")
+    train = glob("test_*")
     train.sort()
 
     # prepare database
     db = np.zeros((len(train), 13), dtype=np.int32)
-
-    # prepare path database
     pdb = []
 
-    # each image
+    # each train
     for i, path in enumerate(train):
         # read image
         img = dic_color(cv2.imread(path))
-
-        #get histogram
+        # histogram
         for j in range(4):
             db[i, j] = len(np.where(img[..., 0] == (64 * j + 32))[0])
             db[i, j+4] = len(np.where(img[..., 1] == (64 * j + 32))[0])
@@ -41,66 +39,38 @@ def get_DB():
         # store class label
         db[i, -1] = cls
 
-        # store image path
+        # add image path
         pdb.append(path)
 
     return db, pdb
 
-# test
-def test_DB(db, pdb):
-    # get test image path
-    test = glob("test_*")
-    test.sort()
+# k-Means step1
+def k_means_step1(db, pdb, Class=2):
+    # copy database
+    feats = db.copy()
 
-    success_num = 0
+    # initiate random seed
+    np.random.seed(1)
 
-    # each image
-    for path in test:
-        # read image
-        img = dic_color(cv2.imread(path))
+    # assign random class 
+    for i in range(len(feats)):
+        if np.random.random() < 0.5:
+            feats[i, -1] = 0
+        else:
+            feats[i, -1] = 1
 
-        # get histogram
-        hist = np.zeros(12, dtype=np.int32)
-        for j in range(4):
-            hist[j] = len(np.where(img[..., 0] == (64 * j + 32))[0])
-            hist[j+4] = len(np.where(img[..., 1] == (64 * j + 32))[0])
-            hist[j+8] = len(np.where(img[..., 2] == (64 * j + 32))[0])
-
-        # get histogram difference
-        difs = np.abs(db[:, :12] - hist)
-        difs = np.sum(difs, axis=1)
-
-        # get class
-        if 'akahara' in path:
-            cls = 0
-        elif 'madara' in path:
-            cls = 1
-
-        # get argmin of difference
-        sort_min = difs.argsort()
-        pred_i = sort_min[:3]
-
-        # get prediction label clsの位置を把握
-
-        pred_list = []
-        for i in pred_i:
-          pred_list.append(db[i, -1])
+    # prepare gravity
+    gs = np.zeros((Class, 12), dtype=np.float32)
         
-        print(pred_list)
-        count = np.bincount(pred_list)
-        pred = np.argmax(count)
+    # get gravity
+    for i in range(Class):
+      # B=[1,4], G=[5,8], R=[9,12]のbin=12
+        gs[i] = np.mean(feats[np.where(feats[..., -1] == i)[0], :12], axis=0)
+    print("assigned label")
+    print(feats)
+    print("Grabity")
+    print(gs)
 
-        if(pred==cls):
-          success_num += 1
-        
-
-        if pred == 0:
-            pl = "akahara"
-        elif pred == 1:
-            pl = "madara"
-        
-        print(path, "is similar >>", pdb[pred], " Pred >>", pl)
-    print("Accuracy >>", success_num / len(test))
 
 db, pdb = get_DB()
-test_DB(db, pdb)
+k_means_step1(db, pdb)
