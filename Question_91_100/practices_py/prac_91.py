@@ -3,35 +3,34 @@ import numpy as np
 
 # K-means step1
 def k_means_step1(img, Class=5):
-	#  get shape
-	H, W, C = img.shape
+  #  get shape
+  H, W, C = img.shape
 
-	# initiate random seed
-	np.random.seed(0)
+  # initiate random seed
+  np.random.seed(0)
 
-	# reshape
-	img = np.reshape(img, (H * W, -1))
+  # reshape 1列にして、Class個のインデックスをランダムに取得 
+  img = np.reshape(img, (H * W, -1))
+  # select one index randomly
+  i = np.random.choice(np.arange(H * W), Class, replace=False)
+  Cs = img[i].copy()
 
-	# select one index randomly
-	i = np.random.choice(np.arange(H * W), Class, replace=False)
-	Cs = img[i].copy()
+  print(Cs)
 
-	print(Cs)
+  clss = np.zeros((H * W), dtype=int)
 
-	clss = np.zeros((H * W), dtype=int)
+  # each pixel
+  for i in range(H * W):
+  # get distance from base pixel
+    dis = np.sqrt(np.sum((Cs - img[i]) ** 2, axis=1))
+  # get argmin distance
+    clss[i] = np.argmin(dis)
 
-	# each pixel
-	for i in range(H * W):
-		# get distance from base pixel
-		dis = np.sqrt(np.sum((Cs - img[i]) ** 2, axis=1))
-		# get argmin distance
-		clss[i] = np.argmin(dis)
+  # show
+  out = np.reshape(clss, (H, W)) * 50
+  out = out.astype(np.uint8)
 
-	# show
-	out = np.reshape(clss, (H, W)) * 50
-	out = out.astype(np.uint8)
-
-	return out
+  return out
 
 
 # read image
