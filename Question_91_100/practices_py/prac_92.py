@@ -1,56 +1,38 @@
 import cv2
 import numpy as np
 
-# Read image
-img = cv2.imread("Question_71_80\imori.jpg")
+# K-means
+def k_means(img, Class=5):
+    #  get shape
+    H, W, C = img.shape
+    np.random.seed(0) 
+    img = np.reshape(img, (H * W, -1))
+    i = np.random.choice(np.arange(H * W), Class, replace=False)
+    Cs = img[i].copy()
+    print(Cs)
+    # 上記まででランダムに5つのインデックスを取得している
+    
+    
+    clss = np.zeros((H * W), dtype=int)
 
-kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
+    # each pixel
+    for i in range(H * W):
+    # get distance from base pixel
+        dis = np.sqrt(np.sum((Cs - img[i]) ** 2, axis=1))
+    # get argmin distanc
+        clss[i] = np.argmin(dis)
 
-# Canny
-def Canny(img):
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    out = cv2.Canny(gray, 240,240)
-    return out 
+    # show
+    out = np.reshape(clss, (H, W)) * 50
+    out = out.astype(np.uint8)
 
-def erode(img,n):
-    return cv2.erode(img, kernel, iterations=n)
-
-def dilate(img,n):
-    return cv2.dilate(img, kernel, iterations=n)
-
-def closing(img,n):
-    # out = Canny(img)
-    out = dilate(img,n)
-    out = erode(out,n)
     return out
 
-def opening(img,n):
-    out = erode(img,n)
-    out = dilate(out,n)
-    return out
 
-out = closing(img,5)
-# gray = cv2.cvtColor(out, cv2.COLOR_BGR2GRAY)
+# read image
+img = cv2.imread("Question_91_100\imori.jpg").astype(np.float32)
 
-# 大津の手法
-# ret, bin_img = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU)
-out = opening(out,5)
+out = k_means(img)
 
-# make mask
-def get_mask(hsv): 
-    mask = hsv.copy() 
-    mask[np.logical_and((hsv[..., 0] >= 90), (hsv[..., 0] <= 150))] = 0 
-    return mask
-
-# RGB > HSV
-hsv = cv2.cvtColor(out, cv2.COLOR_BGR2HSV)
-
-# color tracking
-mask = get_mask(hsv)
-out = cv2.cvtColor(mask, cv2.COLOR_HSV2BGR)
-# out = mask.astype(np.uint8)
-
-# Save result
 cv2.imshow("result", out)
 cv2.waitKey(0)
-cv2.destroyAllWindows()

@@ -1,16 +1,17 @@
-import cv2
 import numpy as np
 
-# Read image
-img = cv2.imread("Question_71_80\imori.jpg")
-H,W,C = img.shape
+# [x1, y1, x2, y2] x1,y1...矩形の左上のx,y  x2,y2...矩形の右下のx,y
+a = np.array((50, 50, 150, 150), dtype=np.float32)
+b = np.array((60, 60, 170, 160), dtype=np.float32)
 
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-# resizeで正しい引数をする !!
-erode = cv2.resize(gray, None, fx=0.5, fy=0.5)
-out = cv2.resize(erode, None, fx=2, fy=2)
+def iou(a,b):
+  R1 = (a[2] - a[0]) * (a[3] - a[1])
+  R2 = (b[2] - b[0]) * (b[3] - b[1])
+  RoI_array = np.array((max(a[0], b[0]), max(a[1], b[1]), min(a[2], b[2]), min(a[3], b[3])), dtype=np.float32)
+  RoI = (RoI_array[2] - RoI_array[0]) * (RoI_array[3] - RoI_array[1])
+  iou = RoI / (R1 + R2 -RoI)
+  
+  return iou
 
-# Save result
-cv2.imshow("result", out)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+result = iou(a,b)
+print(result)
