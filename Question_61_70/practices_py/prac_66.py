@@ -74,12 +74,12 @@ histogram = gradient_histogram(ang_quantized, mag)
 # write histogram to file
 for i in range(9):
     plt.subplot(3,3,i+1)
-    plt.imshow(histogram[..., i])
+    # plt.imshow(histogram[..., i])
     plt.axis('off')
     plt.xticks(color="None")
     plt.yticks(color="None")
 
-plt.show()
+# plt.show()
 #result
 cv2.imshow('result', out)
 cv2.waitKey(0)

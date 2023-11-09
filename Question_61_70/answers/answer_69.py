@@ -76,8 +76,8 @@ def HOG(img):
         cell_N_H, cell_N_W, _ = histogram.shape
         ## each histogram
         for y in range(cell_N_H):
-    	    for x in range(cell_N_W):
-       	    #for i in range(9):
+            for x in range(cell_N_W):
+                #for i in range(9):
                 histogram[y, x] /= np.sqrt(np.sum(histogram[max(y - 1, 0) : min(y + 2, cell_N_H),
                                                             max(x - 1, 0) : min(x + 2, cell_N_W)] ** 2) + epsilon)
 
@@ -168,7 +168,7 @@ out = draw_HOG(img, histogram)
 
 
 # Save result
-cv2.imwrite("out.jpg", out)
+# cv2.imwrite("out.jpg", out)
 cv2.imshow("result", out)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
