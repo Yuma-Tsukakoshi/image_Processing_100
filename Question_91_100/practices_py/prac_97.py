@@ -4,9 +4,6 @@ import numpy as np
 # 1画像の上から順に、左から右に走査していく。
 img = cv2.imread("Question_91_100\imori_many.jpg")
 
-
-# 2各画像の位置に対して、注目位置を中心に複数の矩形を形成する
-
 # 3それぞれの矩形に対する画像を切り抜いて、特徴抽出(HOG,SIFT)を行う
 def hog(img):
     def BGR2GRAY(img):
@@ -70,7 +67,7 @@ def hog(img):
                 histogram[y,x] /= np.sqrt(np.sum(histogram[max(y-1,0):min(y+2,cell_H),max(x-1,0):min(x+2,cell_W)]**2)+epsilon)
         return histogram
     
-    # 画像をグレースケールに変換
+    # 画像をグレースケールに変換をcv2の使わなかったら0除算のエラー消えた 
     gray = BGR2GRAY(img)
     gx,gy = get_gradXY(gray)
     mag, ang = get_MagGrad(gx,gy)
