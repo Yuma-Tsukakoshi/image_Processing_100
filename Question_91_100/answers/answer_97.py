@@ -41,7 +41,7 @@ def HOG(img):
     # Gradient histogram
     def quantization(gradient):
         # prepare quantization table
-        gradient_quantized = np.zeros_like(gradient, dtype=np.int)
+        gradient_quantized = np.zeros_like(gradient, dtype=np.int64)
 
         # quantization base
         d = np.pi / 9
@@ -209,7 +209,7 @@ def sliding_window(img, H_size=32):
 
 
 # read detect target image
-img = cv2.imread("imori_many.jpg")
+img = cv2.imread("Question_91_100\imori_many.jpg")
 
 sliding_window(img)
 
