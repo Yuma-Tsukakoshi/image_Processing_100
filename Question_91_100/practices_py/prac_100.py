@@ -4,13 +4,15 @@ import numpy as np
 np.random.seed(0)
 
 # read image
-img = cv2.imread("imori_1.jpg")
+img = cv2.imread("Question_91_100\imori_1.jpg")
 H, W, C = img.shape
 
 # Grayscale
 gray = 0.2126 * img[..., 2] + 0.7152 * img[..., 1] + 0.0722 * img[..., 0]
 
-gt = np.array((47, 41, 129, 103), dtype=np.float32)
+# gtをnumpy配列にしないで普通の配列にしたらエラーでなくなった。
+# gt = np.array((47, 41, 129, 103), dtype=np.float32)
+gt = [47, 41, 129, 103]
 
 cv2.rectangle(img, (gt[0], gt[1]), (gt[2], gt[3]), (0,255,255), 1)
 
@@ -42,7 +44,7 @@ def hog(gray):
     gra[gra<0] = np.pi / 2 + gra[gra < 0] + np.pi / 2
 
     # Gradient histogram
-    gra_n = np.zeros_like(gra, dtype=np.int)
+    gra_n = np.zeros_like(gra, dtype=np.int32)
 
     d = np.pi / 9
     for i in range(9):
@@ -135,7 +137,7 @@ def sigmoid(x):
 
 
 # crop and create database
-
+# 学習データのHOG特徴量
 Crop_num = 200
 L = 60
 H_size = 32
@@ -175,7 +177,7 @@ for i in range(10000):
 
 
 # read detect target image
-img2 = cv2.imread("imori_many.jpg")
+img2 = cv2.imread("Question_91_100\imori_many.jpg")
 H2, W2, C2 = img2.shape
 
 # Grayscale
@@ -203,7 +205,7 @@ for y in range(0, H2, 4):
             score = nn.forward(region_hog)
             if score >= 0.7:
                 #cv2.rectangle(img2, (x1, y1), (x2, y2), (0,0,255), 1)
-                detects = np.vstack((detects, np.array((x1, y1, x2, y2, score))))
+                detects = np.vstack((detects, np.array((x1, y1, x2, y2, score), dtype=object)))
 
 
 # Non-maximum suppression
@@ -290,7 +292,7 @@ detects = detects[nms(detects, iou_th=0.25)]
 # Evaluation
 
 # [x1, y1, x2, y2]
-GT = np.array(((27, 48, 95, 110), (101, 75, 171, 138)), dtype=np.float32)
+GT = [[27, 48, 95, 110], [101, 75, 171, 138]]
 
 ## Recall, Precision, F-score
 iou_th = 0.5
@@ -337,7 +339,9 @@ for i in range(len(detects)):
         cv2.rectangle(img2, (v[0], v[1]), (v[2], v[3]), (0,0,255), 1)
     else:
         cv2.rectangle(img2, (v[0], v[1]), (v[2], v[3]), (255,0,0), 1)
-    cv2.putText(img2, "{:.2f}".format(detects[i, -1]), (v[0], v[1]+9),
+    
+    #fix: floatにキャストしたら上手く行った
+    cv2.putText(img2, "{:.2f}".format(float(detects[i, -1])), (v[0], v[1]+9),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255,0,255), 1)
 
 for g in GT:
